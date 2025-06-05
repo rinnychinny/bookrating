@@ -20,5 +20,3 @@ Thumbs.db
 *.sqlite3
 .env
 
-# Initial Dataset Clone
-goodbooks-10k/
