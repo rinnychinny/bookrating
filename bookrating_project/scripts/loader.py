@@ -1,3 +1,12 @@
+import os
+import sys
+from pathlib import Path
+import django
+
+sys.path.append(str(Path(__file__).resolve().parents[1]))
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "bookrating_project.settings")
+django.setup()
+
 # Usage:
 #   $ python manage.py shell < load_goodbooks_simple.py
 #
@@ -6,7 +15,6 @@
 
 import csv
 from datetime import datetime
-from pathlib import Path
 
 from bookrating.models import (
     Work, BookEdition,
@@ -15,7 +23,7 @@ from bookrating.models import (
     Rating,
 )
 
-DATA_DIR = Path("..") / "goodbooks-10k"
+DATA_DIR = Path(__file__).resolve().parents[2] / "goodbooks-10k"
 
 # ---------------------------------------------------------------------------
 # CONFIG: change this to  None  for a full load
