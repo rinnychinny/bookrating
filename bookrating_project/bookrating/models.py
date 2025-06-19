@@ -23,11 +23,12 @@ class BookEdition(models.Model):
     ratings_count  = models.PositiveIntegerField()
     avg_rating     = models.DecimalField(max_digits=3, decimal_places=2)
 
+#Joins works to authors
 class WorkAuthor(models.Model):
     work   = models.ForeignKey(Work,   on_delete=models.CASCADE)
     author = models.ForeignKey("Author", on_delete=models.CASCADE)
 
-#Table of authors
+#Table of distinct authors
 class Author(models.Model):
     name = models.CharField(max_length=255, unique=True)
 

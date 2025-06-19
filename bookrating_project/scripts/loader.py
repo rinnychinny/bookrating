@@ -7,10 +7,9 @@ sys.path.append(str(Path(__file__).resolve().parents[1]))
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "bookrating_project.settings")
 django.setup()
 
-# Usage:
-#   $ python manage.py shell < load_goodbooks_simple.py
-#
-# This loads books, editions, authors, tags, and ratings from
+# Usage: python loader.py
+
+# Loads books, editions, authors, tags, and ratings from
 # goodbooks-10k CSVs into a normalised Django database schema.
 
 import csv
@@ -25,15 +24,14 @@ from bookrating.models import (
 
 DATA_DIR = Path(__file__).resolve().parents[2] / "goodbooks-10k"
 
-# ---------------------------------------------------------------------------
-# CONFIG: change this to  None  for a full load
-# ---------------------------------------------------------------------------
+#change this to  None for a full load - 6mm ratings...
 LIMIT_BOOKS = 100        # ← import ONLY the first 100 rows of books.csv
+
 # ---------------------------------------------------------------------------
 # 1. Works, Editions, Authors   (collect IDs while you loop)
 # ---------------------------------------------------------------------------
 kept_edition_ids = set()      # store edition IDs we keep
-kept_work_ids    = set()      # you may need this later if you filter by work
+kept_work_ids    = set()      # needed later to filter by work
 
 def parse_date(s: str | None):
     """Convert MM/DD/YYYY to datetime.date, or None."""
