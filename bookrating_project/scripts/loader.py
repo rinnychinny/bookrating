@@ -7,6 +7,8 @@ sys.path.append(str(Path(__file__).resolve().parents[1]))
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "bookrating_project.settings")
 django.setup()
 
+
+
 # Usage: python loader.py
 
 # Loads books, editions, authors, tags, and ratings from
@@ -21,6 +23,18 @@ from bookrating.models import (
     Tag, EditionTag,
     Rating,
 )
+
+
+#used in dev .. for adding of data to production remove these deletes!
+print("Clearing existing data...")
+Rating.objects.all().delete()
+EditionTag.objects.all().delete()
+Tag.objects.all().delete()
+WorkAuthor.objects.all().delete()
+Author.objects.all().delete()
+BookEdition.objects.all().delete()
+Work.objects.all().delete()
+
 
 DATA_DIR = Path(__file__).resolve().parents[2] / "goodbooks-10k"
 
@@ -101,6 +115,13 @@ print("Books & authors loaded.")
 # ---------------------------------------------------------------------------
 # 2. Tags
 # ---------------------------------------------------------------------------
+with (DATA_DIR / "tags.csv").open(encoding="utf-8") as fp:
+    for row in csv.DictReader(fp):
+        Tag.objects.get_or_create(
+            id=int(row["tag_id"]),
+            defaults={"name": row["tag_name"].strip()},
+        )
+
 with (DATA_DIR / "book_tags.csv").open(encoding="utf-8") as fp:
     for row in csv.DictReader(fp):
         edition_id = int(row["goodreads_book_id"])
@@ -112,12 +133,6 @@ with (DATA_DIR / "book_tags.csv").open(encoding="utf-8") as fp:
             defaults={"count": int(row["count"])},
         )
 
-with (DATA_DIR / "tags.csv").open(encoding="utf-8") as fp:
-    for row in csv.DictReader(fp):
-        Tag.objects.get_or_create(
-            id=int(row["tag_id"]),
-            defaults={"name": row["tag_name"].strip()},
-        )
 
 print("Tags loaded.")
 
