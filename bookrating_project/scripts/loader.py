@@ -39,7 +39,7 @@ Work.objects.all().delete()
 DATA_DIR = Path(__file__).resolve().parents[2] / "goodbooks-10k"
 
 #change this to  None for a full load - 6mm ratings...
-LIMIT_BOOKS = 100        # ← import ONLY the first 100 rows of books.csv
+LIMIT_BOOKS = 20        # ← import ONLY the first LIMIT_BOOKS rows of books.csv
 
 # ---------------------------------------------------------------------------
 # 1. Works, Editions, Authors   (collect IDs while you loop)
@@ -126,7 +126,7 @@ with (DATA_DIR / "book_tags.csv").open(encoding="utf-8") as fp:
     for row in csv.DictReader(fp):
         edition_id = int(row["goodreads_book_id"])
         if edition_id not in kept_edition_ids:
-            continue                       # skip unrelated rows
+            continue #skip unrelated rows                       
         EditionTag.objects.get_or_create(
             edition_id=edition_id,
             tag_id=int(row["tag_id"]),
@@ -140,6 +140,7 @@ print("Tags loaded.")
 # ---------------------------------------------------------------------------
 # 3. Ratings (insert in batches to avoid memory issues)
 # ---------------------------------------------------------------------------
+
 BATCH, BATCH_SIZE = [], 5_000
 
 def flush_batch():
