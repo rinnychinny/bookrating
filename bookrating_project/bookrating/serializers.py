@@ -24,9 +24,14 @@ class BookEditionSerializer(serializers.ModelSerializer):
 class WorkDetailSerializer(serializers.ModelSerializer):
     authors  = AuthorSerializer(many=True, read_only=True)
     editions = BookEditionSerializer(many=True, read_only=True)
-
     class Meta:
         model  = Work
         fields = ["id", "title", "original_year", "avg_rating",
                   "ratings_count", "authors", "editions"]
+
+class WorkWithFanCountSerializer(serializers.ModelSerializer):
+    five_star_count = serializers.IntegerField(read_only=True)
+    class Meta:
+        model  = Work
+        fields = ["id", "title", "avg_rating", "five_star_count"]
 
