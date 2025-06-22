@@ -4,12 +4,18 @@ from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from .models import Work, Author, BookEdition, Rating
+from .models import (Work,
+                     Author,
+                     BookEdition,
+                     Rating,
+                     WorkAuthor)
+
 from .serializers import   (WorkListSerializer, 
                             WorkDetailSerializer,
                             AuthorSerializer,
                             BookEditionSerializer,
-                            WorkWithFanCountSerializer)
+                            WorkWithFanCountSerializer,
+                            WorkAuthorSerializer)
 
 class WorkViewSet(viewsets.ModelViewSet):
     queryset = (Work.objects.all()
@@ -76,3 +82,7 @@ class AuthorViewSet(viewsets.ModelViewSet):
 class BookEditionViewSet(viewsets.ModelViewSet):
     queryset = BookEdition.objects.all()
     serializer_class = BookEditionSerializer
+
+class WorkAuthorViewSet(viewsets.ModelViewSet):
+    queryset = WorkAuthor.objects.all().order_by("id")
+    serializer_class = WorkAuthorSerializer

@@ -27,6 +27,11 @@ class BookEdition(models.Model):
 class WorkAuthor(models.Model):
     work   = models.ForeignKey(Work,   on_delete=models.CASCADE)
     author = models.ForeignKey("Author", on_delete=models.CASCADE)
+    
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["work", "author"], name="unique_work_author")
+        ]
 
 #Table of distinct authors
 class Author(models.Model):

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Work, Author, BookEdition
+from .models import Work, Author, BookEdition, WorkAuthor
 
 class AuthorSerializer(serializers.ModelSerializer):
     class Meta:
@@ -34,4 +34,9 @@ class WorkWithFanCountSerializer(serializers.ModelSerializer):
     class Meta:
         model  = Work
         fields = ["id", "title", "avg_rating", "five_star_count"]
+
+class WorkAuthorSerializer(serializers.ModelSerializer):
+    class Meta:
+        model  = WorkAuthor
+        fields = ["id", "work", "author"]
 
