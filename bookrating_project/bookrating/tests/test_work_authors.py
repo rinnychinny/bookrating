@@ -8,11 +8,12 @@ class WorkAuthorsTest(APITestCase):
     def setUp(self):
         self.author1 = AuthorFactory(name="Author One")
         self.author2 = AuthorFactory(name="Author Two")
+        self.author3 = AuthorFactory(name="Author Three")
         #build a work with two authors
         self.work = WorkFactory()
         self.work.authors.set([self.author1, self.author2])
 
-    #test the DB creates two entries in thr WorkAuthor for this work
+    #test the DB creates two entries in WorkAuthor for this work
     def test_db_relationship(self):
         self.assertEqual(self.work.authors.count(), 2)
         self.assertEqual(
@@ -32,16 +33,15 @@ class WorkAuthorsTest(APITestCase):
     def test_create_work_author_link(self):
         response = self.client.post(
             reverse("workauthor-list"),
-            data={"work": self.work.id, "author": self.author1.id},
+            data={"work": self.work.id, "author": self.author3.id},
             format="json"
         )
         #first insert should produce a 201
         self.assertEqual(response.status_code, 201)
-        self.assertTrue(WorkAuthor.objects.filter(work=self.work, author=self.author1).exists())
+        self.assertTrue(WorkAuthor.objects.filter(work=self.work, author=self.author3).exists())
         
     #test the POST cannot create a duplicate work-author tuple
     def test_cannot_duplicate_work_author_link(self):
-        WorkAuthor.objects.create(work=self.work, author=self.author1)
         response = self.client.post(
             reverse("workauthor-list"),
             data={"work": self.work.id, "author": self.author1.id},

@@ -115,26 +115,27 @@ print("Books & authors loaded.")
 # ---------------------------------------------------------------------------
 # 2. Tags
 # ---------------------------------------------------------------------------
-with (DATA_DIR / "tags.csv").open(encoding="utf-8") as fp:
-    for row in csv.DictReader(fp):
-        Tag.objects.get_or_create(
-            id=int(row["tag_id"]),
-            defaults={"name": row["tag_name"].strip()},
-        )
 
-with (DATA_DIR / "book_tags.csv").open(encoding="utf-8") as fp:
-    for row in csv.DictReader(fp):
-        edition_id = int(row["goodreads_book_id"])
-        if edition_id not in kept_edition_ids:
-            continue #skip unrelated rows                       
-        EditionTag.objects.get_or_create(
-            edition_id=edition_id,
-            tag_id=int(row["tag_id"]),
-            defaults={"count": int(row["count"])},
-        )
+# with (DATA_DIR / "tags.csv").open(encoding="utf-8") as fp:
+#     for row in csv.DictReader(fp):
+#         Tag.objects.get_or_create(
+#             id=int(row["tag_id"]),
+#             defaults={"name": row["tag_name"].strip()},
+#         )
+
+# with (DATA_DIR / "book_tags.csv").open(encoding="utf-8") as fp:
+#     for row in csv.DictReader(fp):
+#         edition_id = int(row["goodreads_book_id"])
+#         if edition_id not in kept_edition_ids:
+#             continue #skip unrelated rows                       
+#         EditionTag.objects.get_or_create(
+#             edition_id=edition_id,
+#             tag_id=int(row["tag_id"]),
+#             defaults={"count": int(row["count"])},
+#         )
 
 
-print("Tags loaded.")
+# print("Tags loaded.")
 
 
 # ---------------------------------------------------------------------------
