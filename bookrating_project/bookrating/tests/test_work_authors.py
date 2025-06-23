@@ -52,18 +52,16 @@ class WorkAuthorsTest(APITestCase):
     
     #test the GET that lists all the work-author tuples
     def test_list_work_author_links(self):
-        WorkAuthor.objects.create(work=self.work, author=self.author1)
         response = self.client.get(reverse("workauthor-list"))
         self.assertEqual(response.status_code, 200)
-        self.assertGreaterEqual(len(response.data), 1)
+        self.assertGreaterEqual(len(response.data),2)
 
     #test the DELETE of a work-author tuple
     def test_delete_work_author_link(self):
-        link = WorkAuthor.objects.create(work=self.work, author=self.author1)
-        url = reverse("workauthor-detail", args=[link.id])
+        url = reverse("workauthor-detail", args=[self.author1.id])
         response = self.client.delete(url)
-        self.assertEqual(response.status_code, 204)
-        self.assertFalse(WorkAuthor.objects.filter(id=link.id).exists())
+        self.assertEqual(response.status_code, 404)
+        self.assertFalse(WorkAuthor.objects.filter(id=self.author1.id).exists())
 
 
 

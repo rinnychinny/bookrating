@@ -5,7 +5,7 @@ from django.db import models
 class Work(models.Model):
     id               = models.IntegerField(primary_key=True)
     title            = models.CharField(max_length=255)
-    authors          = models.ManyToManyField("Author", through="WorkAuthor")
+    authors          = models.ManyToManyField("Author", through="WorkAuthor", related_name="works")
     original_year    = models.IntegerField(null=True, blank=True)
     avg_rating       = models.DecimalField(max_digits=3, decimal_places=2)
     ratings_count    = models.PositiveIntegerField()

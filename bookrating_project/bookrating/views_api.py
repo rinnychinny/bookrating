@@ -58,7 +58,6 @@ class WorkViewSet(viewsets.ModelViewSet):
         )
 
         #fetch Work objects & attach the count
-
         id_to_count = {w["edition__work"]: w["five_star_count"] for w in work_counts}
 
         # annotate using a CASE expression (for static dict -> queryset mapping)
@@ -76,13 +75,21 @@ class WorkViewSet(viewsets.ModelViewSet):
         return Response(data)
 
 class AuthorViewSet(viewsets.ModelViewSet):
-    queryset = Author.objects.all()
+    queryset = Author.objects.all().order_by("id") #use order_by to prevent pagination warning in tests
     serializer_class = AuthorSerializer
+    #create custom endpoint to show all works of a particular author
+    @action(detail=True, methods=["get"])
+    def works(self, request, pk=None):
+        author = self.get_object()
+        works = author.works.all().prefetch_related("authors", "editions")
+        serializer = WorkListSerializer(works, many=True, context={"request": request})
+        return Response(serializer.data)
 
 class BookEditionViewSet(viewsets.ModelViewSet):
     queryset = BookEdition.objects.all()
     serializer_class = BookEditionSerializer
 
 class WorkAuthorViewSet(viewsets.ModelViewSet):
-    queryset = WorkAuthor.objects.all().order_by("id")
+    queryset = WorkAuthor.objects.all().order_by("id") #use order_by to prevent pagination warning in tests
     serializer_class = WorkAuthorSerializer
+

@@ -1,10 +1,14 @@
 from rest_framework import serializers
 from .models import Work, Author, BookEdition, WorkAuthor
 
-class AuthorSerializer(serializers.ModelSerializer):
+class AuthorSerializer(serializers.HyperlinkedModelSerializer):
+    works = serializers.HyperlinkedIdentityField(
+        view_name='author-works',
+        lookup_field='pk'
+    )
     class Meta:
         model  = Author
-        fields = "__all__"
+        fields = ["id", "name", "works"]
 
 class WorkListSerializer(serializers.HyperlinkedModelSerializer):
     #Get DRF to add a hyperlink to the work detail view
@@ -12,6 +16,7 @@ class WorkListSerializer(serializers.HyperlinkedModelSerializer):
         view_name="work-detail", 
         lookup_field="pk",
     )
+
     class Meta:
         model  = Work
         fields = "__all__"

@@ -16,12 +16,12 @@ Including another URLconf
 """
 
 from django.contrib import admin
-from django.urls import path, include, reverse_lazy
-from django.views.generic import RedirectView
+from django.urls import path, include
+from bookrating.views import api_index
 
 urlpatterns = [
     #302 (temporary) redirect from "/" → "/api/"
-    path("", RedirectView.as_view(url=reverse_lazy("api-root"), permanent=False)),
+    path("", api_index, name="landing"), #main landing page
     path('api/', include('bookrating.urls_api')),
     path('admin/', admin.site.urls),
 ]
