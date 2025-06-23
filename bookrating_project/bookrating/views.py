@@ -1,103 +1,70 @@
-#Main landing view that demonstrates API calls as URLs
+# Main landing view that demonstrates API calls as URLs
 
 from django.http import HttpResponse
 from django.urls import reverse, NoReverseMatch
-from django.utils.html import escape
-from bookrating.models import Author, Work
+from bookrating.models import Work, Author
+
+
+def safe_reverse(viewname, *args, **kwargs):
+    # helper function to get url from viewname with args
+    try:
+        return reverse(viewname, *args, **kwargs)
+    except NoReverseMatch:
+        return None
 
 
 def api_index(request):
-    """
-    Landing page that shows:
-      • api page
-      • core api list endpoints
-      • a few sample 'works-by-author' links
-      • a few sample 'also-loved' links
-    """
-    
-    # helper (don’t crash if a route is missing)
-    def safe_reverse(v, *args):
-        try:
-            return reverse(v, *args)
-        except NoReverseMatch:
-            return None
-    
-    # -------------------------------------------------
-    # 1. Top-level list endpoints
-    # -------------------------------------------------
-    top_links = [
-        ("API",                 "api-root"),
-        ("Authors list",        "author-list"),
-        ("Works list",          "work-list"),
-        ("Book Editions list",  "bookedition-list"),
-        ("Work-Author list",    "workauthor-list"),
+    # main landing page view
+
+    html = "<h1>API Example Endpoints</h1>"
+
+    # helper function to display text and url of link
+    def render_links(link_defs):
+        html = ""
+        for desc, viewname, args in link_defs:
+            url = safe_reverse(viewname, args=args)
+            if url:
+                html += f"<li>{desc}: <a href='{url}'>{url}</a></li>"
+        return html
+
+    # API root
+    html += "<h2>API Root</h2><ul>"
+    api_link = [("API Root", "api-root", [])]
+    html += render_links(api_link)
+    html += "</ul>"
+
+    # List endpoints
+    html += "<h2>API List Endpoints</h2><ul>"
+    list_links = [
+        ("All Works", "work-list", []),
+        ("All Authors", "author-list", []),
+        ("All Editions", "edition-list", []),
+        ("All Work-Author Links", "workauthor-list", []),
+        ("All Edition Ratings", "rating-list", []),
     ]
-    top_ul = "".join(
-        f'<li>{escape(lbl)}: '
-        f'<a href="{escape(url)}">{escape(url)}</a></li>'
-        if (url := safe_reverse(route)) else
-        f'<li>{escape(lbl)}: (unavailable)</li>'
-        for lbl, route in top_links
-    )
+    html += render_links(list_links)
+    html += "</ul>"
 
-    # -------------------------------------------------
-    # 2. A few sample “works for author” links
-    # -------------------------------------------------
-    author_li = []
-    for author in Author.objects.all()[:5]:        # first 5 authors
-        url = reverse("author-works", args=[author.pk])
-        author_li.append(
-            f'<li><a href="{escape(url)}">'
-            f'Works by {escape(author.name)}</a></li>'
-        )
-    authors_ul = "".join(author_li) or "<li>No authors yet</li>"
+    # Detail/custom endpoints
+    html += "<h2>Example Detail & Custom Endpoints</h2><ul>"
+    work = Work.objects.first()
+    author = Author.objects.first()
 
-    # -------------------------------------------------
-    # 3. A few sample “also-loved” links
-    # -------------------------------------------------
-    loved_li = []
-    for work in Work.objects.order_by("-ratings_count")[:5]:
-        url = reverse("work-also-loved", args=[work.pk])
-        loved_li.append(
-            f'<li><a href="{escape(url)}">'
-            f'People who loved <em>{escape(work.title)}</em> also loved…</a></li>'
-        )
-    loved_ul = "".join(loved_li) or "<li>No works yet</li>"
+    if work:
+        work_links = [
+            ("Work Detail", "work-detail", [work.pk]),
+            ("Work Editions", "work-editions", [work.pk]),
+            ("Work Also Loved", "work-also-loved", [work.pk]),
+            ("Work Ratings", "work-ratings", [work.pk]),
+        ]
+        html += render_links(work_links)
 
-    # -------------------------------------------------
-    html = f"""
-    <html>
-      <head>
-        <title>BookRating API index</title>
-        <style>
-          body {{ font-family: Arial; margin: 2rem; }}
-          h2  {{ margin-top: 2rem; }}
-          li  {{ margin-bottom: .4rem; }}
-        </style>
-      </head>
-      <body>
-        <h1>BookRating API – landing page</h1>
+    if author:
+        author_links = [
+            ("Author Detail", "author-detail", [author.pk]),
+            ("Author's Works", "author-works", [author.pk]),
+        ]
+        html += render_links(author_links)
 
-        <h2>Top-level endpoints</h2>
-        <ul>{top_ul}</ul>
-
-        <h2>Works for sample authors</h2>
-        <ul>{authors_ul}</ul>
-
-        <h2>“Also loved” recommendations</h2>
-        <ul>{loved_ul}</ul>
-      </body>
-    </html>
-    """
+    html += "</ul>"
     return HttpResponse(html)
-
-
-# helper so we don’t crash if a view-name is missing
-def _url_exists(viewname):
-    try:
-        reverse(viewname)
-        return True
-    except NoReverseMatch:
-        return False
-
-
