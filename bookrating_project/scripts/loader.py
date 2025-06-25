@@ -1,19 +1,20 @@
-from bookrating.models import (
-    Work, BookEdition,
-    Author, WorkAuthor,
-    Tag, EditionTag,
-    Rating,
-)
 from datetime import datetime
 import csv
 import os
+import django
 import sys
 from pathlib import Path
-import django
-
 sys.path.append(str(Path(__file__).resolve().parents[1]))
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "bookrating_project.settings")
 django.setup()
+
+# autopep8: off
+from bookrating.models import (
+    Work, BookEdition,
+    Author, WorkAuthor,
+    Rating,
+)
+# autopep8: on
 
 # Usage: python loader.py
 
@@ -31,10 +32,13 @@ BookEdition.objects.all().delete()
 Work.objects.all().delete()
 
 
-DATA_DIR = Path(__file__).resolve().parents[2] / "goodbooks-10k"
+DATA_DIR = Path(__file__).resolve().parents[2] / "goodbooks-10k-filtered"
+books_fname = "filtered_books.csv"
+ratings_fname = "filtered_ratings.csv"
 
-# change this to  None for a full load - 6mm ratings...
-LIMIT_BOOKS = 20        # ← import ONLY the first LIMIT_BOOKS rows of books.csv
+# change this to  None for a full load, or an integer to limit
+# fyi 6mm ratings on unfiltered dataset ...
+LIMIT_BOOKS = None   # ← import ONLY the first LIMIT_BOOKS rows of the books csv file
 
 # ---------------------------------------------------------------------------
 # 1. Works, Editions, Authors   (collect IDs while you loop)
@@ -63,7 +67,7 @@ def _parse_year(s):
 # ---------------------------------------------------------------------------
 # 1. Works, Editions, Authors
 # ---------------------------------------------------------------------------
-with (DATA_DIR / "books.csv").open(encoding="utf-8") as fp:
+with (DATA_DIR / books_fname).open(encoding="utf-8") as fp:
     reader = csv.DictReader(fp)
     # reader.fieldnames = [fn.strip() for fn in reader.fieldnames] #clean up leading spaces on some field names
     for i, row in enumerate(reader, start=1):
@@ -118,7 +122,7 @@ def flush_batch():
         BATCH.clear()
 
 
-with (DATA_DIR / "ratings.csv").open(encoding="utf-8") as fp:
+with (DATA_DIR / ratings_fname).open(encoding="utf-8") as fp:
     for row in csv.DictReader(fp):
         edition_id = int(row["book_id"])
         if edition_id not in kept_edition_ids:
