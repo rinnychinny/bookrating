@@ -23,7 +23,8 @@ from bookrating.models import (
 # Tags excluded due to data restriction
 
 
-# used in dev .. for adding of data to production remove these deletes!
+# used in dev for creating data from scratch..
+# for adding of data use bulk_load command in bulk_load.py
 print("Clearing existing data...")
 Rating.objects.all().delete()
 WorkAuthor.objects.all().delete()
@@ -41,9 +42,9 @@ ratings_fname = "filtered_ratings.csv"
 LIMIT_BOOKS = None   # ← import ONLY the first LIMIT_BOOKS rows of the books csv file
 
 # ---------------------------------------------------------------------------
-# 1. Works, Editions, Authors   (collect IDs while you loop)
+# 1. Works, Editions, Authors   (collect IDs looping)
 # ---------------------------------------------------------------------------
-kept_edition_ids = set()      # store edition IDs we keep
+kept_edition_ids = set()      # store edition IDs to keep
 kept_work_ids = set()      # needed later to filter by work
 
 
@@ -113,6 +114,7 @@ with (DATA_DIR / books_fname).open(encoding="utf-8") as fp:
 
 print("Books & authors loaded.")
 
+# Batch ratings for speed
 BATCH, BATCH_SIZE = [], 5_000
 
 
