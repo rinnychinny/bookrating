@@ -98,18 +98,33 @@ class Command(BaseCommand):
 
     def load_ratings(self, path):
         BATCH, BATCH_SIZE = [], 5_000
+        seen_pairs = set()
+        skipped_duplicates = 0
 
         def flush_batch():
             if BATCH:
-                Rating.objects.bulk_create(BATCH)
+                try:
+                    # ignore_conflicts to silently skip existing duplicates in the db
+                    Rating.objects.bulk_create(BATCH, ignore_conflicts=True)
+                except Exception as e:
+                    self.stderr.write(self.style.ERROR(
+                        f"Batch insert failed: {e}"))
             BATCH.clear()
 
         with open(path, newline="", encoding="utf-8") as f:
             for row in csv.DictReader(f):
+                user_id = int(row["user_id"])
                 edition_id = int(row["book_id"])
+                key = (user_id, edition_id)
+
+                if key in seen_pairs:
+                    skipped_duplicates += 1
+                    continue
+
+                seen_pairs.add(key)
                 BATCH.append(
                     Rating(
-                        user_id=int(row["user_id"]),
+                        user_id=user_id,
                         edition_id=edition_id,
                         rating=int(row["rating"]),
                     )
@@ -117,3 +132,5 @@ class Command(BaseCommand):
                 if len(BATCH) >= BATCH_SIZE:
                     flush_batch()
         flush_batch()
+        self.stdout.write(
+            f"Skipped {skipped_duplicates} duplicate ratings in input file.")

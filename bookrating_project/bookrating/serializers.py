@@ -5,7 +5,16 @@ from .models import Work, Author, BookEdition, WorkAuthor, Rating
 class RatingSerializer(serializers.ModelSerializer):
     class Meta:
         model = Rating
-        fields = ["id", "edition", "rating"]
+        fields = ["id", "user_id", "edition", "rating"]
+
+    # define custom validation for the rating field
+    def validate_rating(self, value):
+        if not isinstance(value, int):
+            raise serializers.ValidationError("Rating must be an integer.")
+        if not (0 <= value <= 5):
+            raise serializers.ValidationError(
+                "Rating must be between 0 and 5 inclusive.")
+        return value
 
 
 class AuthorSerializer(serializers.HyperlinkedModelSerializer):
