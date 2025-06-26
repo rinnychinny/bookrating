@@ -73,6 +73,16 @@ Custom Django command bulk_load provided with 2 optional named arguments. Usage:
 
 python manage.py bulk_load --books 'fname_books.csv' --ratings 'fname_ratings.csv'
 
+---
+
+## 📁 Tests
+
+Run all tests in the bookrating/tests directory. Usage:
+
+python manage.py test
+
+---
+
 ## 📦 Requirements
 
 All dependencies are listed in `requirements.txt`. Use `pip install -r requirements.txt` to replicate the environment.
