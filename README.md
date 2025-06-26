@@ -11,6 +11,7 @@ A Django-based RESTful web application for rating books and receiving personaliz
 - Browse and filter books by author
 - Uses Django models and REST API endpoints
 - Data sourced from the Goodreads-10k dataset
+- Bulk loader command provided (bulk_load)
 
 ---
 
@@ -65,6 +66,12 @@ This project uses the [Goodreads 10k dataset](https://www.kaggle.com/datasets/zy
 The filtered datasets are in \goodbooks-10k-filtered\ (filtered_books.csv and filtered_ratings.csv), along with the .ipynb notebook used to produce the filtered data.
 
 ---
+
+## 📁 Bulk load
+
+Custom Django command bulk_load provided with 2 optional named arguments. Usage:
+
+python manage.py bulk_load --books 'fname_books.csv' --ratings 'fname_ratings.csv'
 
 ## 📦 Requirements
 
