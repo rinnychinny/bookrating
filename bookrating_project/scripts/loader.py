@@ -112,7 +112,7 @@ with (DATA_DIR / books_fname).open(encoding="utf-8") as fp:
             # also add into WorkAuthor junction table
             WorkAuthor.objects.get_or_create(work=work, author=author)
 
-print("Books & authors loaded.")
+print("Books, authors and editions loaded.")
 
 # Batch ratings for speed
 BATCH, BATCH_SIZE = [], 5_000
@@ -124,14 +124,25 @@ def flush_batch():
         BATCH.clear()
 
 
+print("Loading ratings...")
+
+seen_pairs = set()
+skipped_duplicates = 0
+
 with (DATA_DIR / ratings_fname).open(encoding="utf-8") as fp:
     for row in csv.DictReader(fp):
         edition_id = int(row["book_id"])
+        user_id = int(row["user_id"])
+        key = (user_id, edition_id)
         if edition_id not in kept_edition_ids:
             continue                     # skip ratings outside subset
+        if key in seen_pairs:
+            skipped_duplicates += 1
+            continue  # skip duplicates
+        seen_pairs.add(key)
         BATCH.append(
             Rating(
-                user_id=int(row["user_id"]),
+                user_id=user_id,
                 edition_id=edition_id,
                 rating=int(row["rating"]),
             )
@@ -141,4 +152,5 @@ with (DATA_DIR / ratings_fname).open(encoding="utf-8") as fp:
 flush_batch()
 
 print("Ratings loaded.")
+print(f"Skipped {skipped_duplicates:,} duplicate ratings.")
 print("Done!")

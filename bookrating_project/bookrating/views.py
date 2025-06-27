@@ -1,5 +1,13 @@
 # Main landing view that demonstrates API calls as URLs
 
+import sys
+import platform
+import django
+import pkg_resources
+from django.contrib.auth import get_user_model
+from django.conf import settings
+
+
 from django.http import HttpResponse
 from django.urls import reverse, NoReverseMatch
 from bookrating.models import Work, Author
@@ -71,4 +79,35 @@ def api_index(request):
         html += render_links(author_links)
 
     html += "</ul>"
+
+    # Metadata Section
+    html += "<h2>Project Metadata</h2><ul>"
+    html += f"<li>Python version: {platform.python_version()}</li>"
+    html += f"<li>Django version: {django.get_version()}</li>"
+    html += f"<li>OS: {platform.system()} {platform.release()}</li>"
+
+    # Admin info (dummy text unless you're creating a default superuser)
+    html += f"<li>Admin credentials: user: admin, password: admin</li>"
+
+    import sys
+    import pkgutil
+
+    def get_imported_packages():
+        # Collect top-level imported modules
+        imported = {name.split('.')[0] for name in sys.modules.keys()}
+
+        # Get names of installed top-level modules
+        installed = {module.name for module in pkgutil.iter_modules()}
+
+        # Intersect and sort
+        used = sorted(imported & installed)
+
+        return used
+
+    # Show installed packages
+    html += "<h2>Imported Packages (Approx)</h2><ul>"
+    for pkg in get_imported_packages():
+        html += f"<li>{pkg}</li>"
+    html += "</ul>"
+
     return HttpResponse(html)

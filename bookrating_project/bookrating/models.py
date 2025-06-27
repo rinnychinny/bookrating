@@ -52,3 +52,7 @@ class Rating(models.Model):
     user_id = models.IntegerField()
     edition = models.ForeignKey(BookEdition, on_delete=models.CASCADE)
     rating = models.PositiveSmallIntegerField()
+
+    class Meta:
+        # only one rating per user per edition
+        unique_together = ("user_id", "edition")
