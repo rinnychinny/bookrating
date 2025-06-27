@@ -55,4 +55,7 @@ class Rating(models.Model):
 
     class Meta:
         # only one rating per user per edition
-        unique_together = ("user_id", "edition")
+        constraints = [
+            models.UniqueConstraint(
+                fields=["user_id", "edition"], name="unique_user_edition_rating")
+        ]

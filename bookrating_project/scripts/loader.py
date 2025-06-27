@@ -45,7 +45,7 @@ LIMIT_BOOKS = None   # ← import ONLY the first LIMIT_BOOKS rows of the books c
 # 1. Works, Editions, Authors   (collect IDs looping)
 # ---------------------------------------------------------------------------
 kept_edition_ids = set()      # store edition IDs to keep
-kept_work_ids = set()      # needed later to filter by work
+# kept_work_ids = set()      # needed later to filter by work
 
 
 def parse_date(s: str | None):
@@ -66,22 +66,21 @@ def _parse_year(s):
 
 
 # ---------------------------------------------------------------------------
-# 1. Works, Editions, Authors
+# 1. Works, Editions, Authors, WorkAuthor
 # ---------------------------------------------------------------------------
 with (DATA_DIR / books_fname).open(encoding="utf-8") as fp:
     reader = csv.DictReader(fp)
-    # reader.fieldnames = [fn.strip() for fn in reader.fieldnames] #clean up leading spaces on some field names
     for i, row in enumerate(reader, start=1):
         if LIMIT_BOOKS and i > LIMIT_BOOKS:
             break           # Work
 
         book_id = int(row["book_id"])
         work_id = int(row["work_id"])
-        kept_edition_ids.add(book_id)
-        kept_work_ids.add(work_id)
+        kept_edition_ids.add(book_id)  # needed for filtering ratings
+        # kept_work_ids.add(work_id)
 
         work, _ = Work.objects.get_or_create(
-            id=int(row["work_id"]),
+            id=work_id,
             defaults={
                 "title": (row["original_title"] or row["title"]).strip(),
                 "original_year": _parse_year(row["original_publication_year"]),
@@ -92,7 +91,7 @@ with (DATA_DIR / books_fname).open(encoding="utf-8") as fp:
 
         # Edition
         BookEdition.objects.get_or_create(
-            id=int(row["book_id"]),
+            id=book_id,
             defaults={
                 "work": work,
                 "isbn": row["isbn"] or None,
@@ -113,6 +112,10 @@ with (DATA_DIR / books_fname).open(encoding="utf-8") as fp:
             WorkAuthor.objects.get_or_create(work=work, author=author)
 
 print("Books, authors and editions loaded.")
+
+# ---------------------------------------------------------------------------
+# 2. Ratings
+# ---------------------------------------------------------------------------
 
 # Batch ratings for speed
 BATCH, BATCH_SIZE = [], 5_000
