@@ -28,7 +28,21 @@ class WorkViewSet(viewsets.ModelViewSet):
             return WorkListSerializer  # /api/works returns list
         return WorkDetailSerializer  # /api/works/<id> returns single work detail
 
+    @action(detail=False, methods=["get"])
+    def top_rated_by_author(self, request):
+        author_query = request.query_params.get("author", "")
+        min_rating = float(request.query_params.get("min_rating", 4.0))
+
+        works = Work.objects.filter(
+            avg_rating__gt=min_rating,
+            authors__name__icontains=author_query
+        ).order_by("-avg_rating").distinct()
+
+        serializer = self.get_serializer(works, many=True)
+        return Response(serializer.data)
+
     # custom endpoint to show ratings info (bucket counts, average, total acount) for all editions of one work
+
     @action(detail=True, methods=["get"])
     def ratings(self, request, pk=None):
         work = self.get_object()
