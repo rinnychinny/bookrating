@@ -88,26 +88,20 @@ def api_index(request):
 
     # Admin info (dummy text unless you're creating a default superuser)
     html += f"<li>Admin credentials: user: admin, password: admin</li>"
-
-    import sys
-    import pkgutil
-
-    def get_imported_packages():
-        # Collect top-level imported modules
-        imported = {name.split('.')[0] for name in sys.modules.keys()}
-
-        # Get names of installed top-level modules
-        installed = {module.name for module in pkgutil.iter_modules()}
-
-        # Intersect and sort
-        used = sorted(imported & installed)
-
-        return used
-
-    # Show installed packages
-    html += "<h2>Imported Packages (Approx)</h2><ul>"
-    for pkg in get_imported_packages():
-        html += f"<li>{pkg}</li>"
     html += "</ul>"
+
+    import os
+
+    # Path to requirements.txt — adjust if needed
+    requirements_path = os.path.join(os.path.dirname(os.path.dirname(
+        os.path.dirname(__file__))), 'requirements.txt')
+
+    html += "<h2>requirements.txt</h2><pre>"
+    try:
+        with open(requirements_path, 'r', encoding='utf-8-sig') as req_file:
+            html += req_file.read()
+    except FileNotFoundError:
+        html += "requirements.txt not found"
+    html += "</pre>"
 
     return HttpResponse(html)
