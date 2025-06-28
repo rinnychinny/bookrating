@@ -39,7 +39,8 @@ class WorkViewSet(viewsets.ModelViewSet):
             authors__name__icontains=author_query
         ).order_by("-avg_rating").distinct()
 
-        serializer = self.get_serializer(works, many=True)
+        serializer = self.get_serializer(
+            works, many=True, context={'request': request})
         return Response(serializer.data)
 
     # custom endpoint to show ratings info (bucket counts, average, total acount) for all editions of one work
