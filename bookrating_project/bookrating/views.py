@@ -88,24 +88,20 @@ def api_index(request):
 
     # Admin info (dummy text unless you're creating a default superuser)
     html += f"<li>Admin credentials: user: admin, password: admin</li>"
-
-    import sys
-    import pkgutil
-
-    import pkg_resources
-
-    def get_user_installed_packages():
-        # Get the list of all distributions
-        all_distributions = pkg_resources.working_set
-        # Only include top-level user-installed packages (no dependencies)
-        top_level = {
-            dist.project_name for dist in all_distributions if dist.key == dist.project_name.lower()}
-        return sorted(top_level)
-
-    # Display in HTML
-    html += "<h2>User Installed Packages (pip-chill style)</h2><ul>"
-    for pkg in get_user_installed_packages():
-        html += f"<li>{pkg}</li>"
     html += "</ul>"
+
+    import os
+
+    # Path to requirements.txt — adjust if needed
+    requirements_path = os.path.join(os.path.dirname(os.path.dirname(
+        os.path.dirname(__file__))), 'requirements.txt')
+
+    html += "<h2>requirements.txt</h2><pre>"
+    try:
+        with open(requirements_path, 'r', , encoding='utf-8-sig') as req_file:
+            html += req_file.read()
+    except FileNotFoundError:
+        html += "requirements.txt not found"
+    html += "</pre>"
 
     return HttpResponse(html)

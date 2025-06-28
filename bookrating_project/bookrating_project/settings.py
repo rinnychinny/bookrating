@@ -14,7 +14,7 @@ from pathlib import Path
 
 import os
 
-DEBUG = False  # False in production
+DEBUG = True  # False in production
 
 # Paths inside the full file structure look like: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
