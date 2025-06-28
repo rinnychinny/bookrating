@@ -28,6 +28,7 @@ class WorkViewSet(viewsets.ModelViewSet):
             return WorkListSerializer  # /api/works returns list
         return WorkDetailSerializer  # /api/works/<id> returns single work detail
 
+    # custom endpoint to return ratings above an input level and author containing a specified string
     @action(detail=False, methods=["get"])
     def top_rated_by_author(self, request):
         author_query = request.query_params.get("author", "")
@@ -127,7 +128,7 @@ class WorkViewSet(viewsets.ModelViewSet):
             .order_by("-five_star_count")
         )
 
-        # final ordering by avg_rating, then five_Star_count
+        # final ordering by avg_rating, five_star_count
         data = WorkWithFanCountSerializer(
             works.order_by("-avg_rating", "-five_star_count"), many=True
         ).data
