@@ -1,0 +1,1 @@
+ web: gunicorn bookrating_project.wsgi
