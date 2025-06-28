@@ -98,7 +98,7 @@ def api_index(request):
 
     html += "<h2>requirements.txt</h2><pre>"
     try:
-        with open(requirements_path, 'r', encoding='utf-8-sig') as req_file:
+        with open(requirements_path, 'r', encoding='utf-16') as req_file:
             html += req_file.read()
     except FileNotFoundError:
         html += "requirements.txt not found"
