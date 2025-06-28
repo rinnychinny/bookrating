@@ -92,21 +92,19 @@ def api_index(request):
     import sys
     import pkgutil
 
-    def get_imported_packages():
-        # Collect top-level imported modules
-        imported = {name.split('.')[0] for name in sys.modules.keys()}
+    import pkg_resources
 
-        # Get names of installed top-level modules
-        installed = {module.name for module in pkgutil.iter_modules()}
+    def get_user_installed_packages():
+        # Get the list of all distributions
+        all_distributions = pkg_resources.working_set
+        # Only include top-level user-installed packages (no dependencies)
+        top_level = {
+            dist.project_name for dist in all_distributions if dist.key == dist.project_name.lower()}
+        return sorted(top_level)
 
-        # Intersect and sort
-        used = sorted(imported & installed)
-
-        return used
-
-    # Show installed packages
-    html += "<h2>Imported Packages (Approx)</h2><ul>"
-    for pkg in get_imported_packages():
+    # Display in HTML
+    html += "<h2>User Installed Packages (pip-chill style)</h2><ul>"
+    for pkg in get_user_installed_packages():
         html += f"<li>{pkg}</li>"
     html += "</ul>"
 
