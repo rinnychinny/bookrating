@@ -1,6 +1,6 @@
 # 📚 Book Rating Recommender
 
-A Django-based RESTful web application for rating books and receiving personalized recommendations. Built using the Goodreads-10k dataset for user-book rating data, tags, and metadata.
+A Django-based RESTful web application for rating books and receiving personalized recommendations. Built using the Goodreads-10k dataset for user-book rating data.
 
 ---
 
@@ -15,6 +15,16 @@ A Django-based RESTful web application for rating books and receiving personaliz
 
 ---
 
+## GitHub Repository Information
+
+The development version of the application is on branch main, public GitHub link:
+https://github.com/rinnychinny/bookrating/tree/main
+
+The production version of the application is on branch render-deploy, public GitHub link:
+https://github.com/rinnychinny/bookrating/tree/render-deploy
+
+---
+
 ## 🛠️ Setup Instructions
 
 ### 1. Clone the repository
@@ -22,7 +32,7 @@ A Django-based RESTful web application for rating books and receiving personaliz
 git clone https://github.com/rinnychinny/bookrating.git
 cd bookrating
 
-### 2. Set up a virtual environment
+### 2. Set up virtual environment
 
 python -m venv venv
 
@@ -55,7 +65,7 @@ python scripts/loader.py
 
 python manage.py runserver
 
-Then open your browser at [http://localhost:8000](http://localhost:8000)
+Then open browser at [http://localhost:8000](http://localhost:8000)
 
 ---
 
@@ -85,7 +95,7 @@ python manage.py test
 
 ## 📦 Requirements
 
-All dependencies are listed in `requirements.txt`. Use `pip install -r requirements.txt` to replicate the environment.
+All dependencies are listed in `requirements.txt` using pip-chill. Use `pip install -r requirements.txt` to replicate the environment.
 
 ---
 
