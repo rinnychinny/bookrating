@@ -29,7 +29,9 @@ https://github.com/rinnychinny/bookrating/tree/render-deploy
 
 ### 1. Clone the repository
 
-git clone https://github.com/rinnychinny/bookrating.git
+#### Use recurse-submodules to load the base data from goodbooks-10k
+
+git clone --recurse-submodules https://github.com/rinnychinny/bookrating.git
 cd bookrating
 
 ### 2. Set up virtual environment
